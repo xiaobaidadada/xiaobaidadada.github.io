@@ -7,6 +7,8 @@
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+<!--禁止浏览器缓存，没啥用吧-->
+  <meta HTTP-EQUIV="pragma" CONTENT="no-cache">
 </head>
 <body>
   <div id="app"></div>
@@ -42,5 +44,16 @@
    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
    <!--在所有的代码块上添加一个简单的Click to copy按钮来允许用户从你的文档中轻易地复制代码-->
    <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+
+   <script>
+
+    //刷新界面，地址不同，就不会缓存了，但是需要两次请求
+    if(!window.name){         var str = Math.random().toString(36).substr(2);//随机字符串         
+      window.location.href += '?S='+ str;//兼容微信浏览器刷新
+      window.name = 'isreload';   
+      }
+
+
+   </script>
 </body>
 </html>
