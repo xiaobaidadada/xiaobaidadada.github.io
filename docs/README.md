@@ -6,4 +6,4 @@
 
 # 游戏
 
-[五子棋](https://xiaobaidadada.github.io/v1/wzq.wzq.html)
+[五子棋](https://xiaobaidadada.github.io/docs/v1/wzq.wzq.html)
