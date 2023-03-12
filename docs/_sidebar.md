@@ -28,3 +28,4 @@
 - 数据库
   - [NoSql与Sql数据库的区别](/database/NoSql与Sql数据库的区别.md)
   - [数据库id](/database/数据库id.md)
+  - [权限](/database/权限.md)
