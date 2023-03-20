@@ -12,4 +12,4 @@
 
 这是一个目前正在开发的个人博客框架项目：[xiaobaidadada/easyblog: 一个个人博客系统 (github.com)](https://github.com/xiaobaidadada/easyblog)
 
-[kuxueyuan](https://github.com/xiaobaidadada/file/kuxueyuan.js)
+[kuxueyuan](https://xiaobaidadada.github.io/file/kuxueyuan.js)
