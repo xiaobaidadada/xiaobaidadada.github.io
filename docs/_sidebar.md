@@ -6,7 +6,7 @@
   * [从javaNIO到netty](/java/从javaNIO到netty.md)
   * [大白话聊io模型](/java/大白话聊io模型.md)
   * [spring的国际化功能](/java/spring的国际化功能.md)
-  * [浅谈锁](/java/浅谈锁].md)
+  * [浅谈锁](/java/浅谈锁.md)
   
 * 架构
   * [远程调用选哪个](arch/remote.md)
