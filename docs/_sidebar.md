@@ -23,6 +23,7 @@
   - [个人博客设计easyblog: v1](/other/个人博客设计.md)
   - [聚集索引和非聚集索引](/other/聚集索引和非聚集索引.md)
   - [gradle学习笔记](/other/gradle学习笔记.md)
+  - [名词翻译辨认](/other/名词翻译辨认.md)
 - 实际
   - [问题总结](/code/issue.md)
   - [循环和递归要使用哪个](/code/循环和递归选哪个.md)
