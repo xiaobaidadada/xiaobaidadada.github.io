@@ -3,6 +3,7 @@
 - [首页](/README.md)
 
 * java
+*  * [浅谈锁](/java/什么时候会用到线程安全.md)
   * [从javaNIO到netty](/java/从javaNIO到netty.md)
   * [大白话聊io模型](/java/大白话聊io模型.md)
   * [spring的国际化功能](/java/spring的国际化功能.md)
