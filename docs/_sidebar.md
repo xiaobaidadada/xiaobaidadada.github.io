@@ -3,7 +3,7 @@
 - [首页](/README.md)
 
 * java
-*  * [什么时候会用到线程安全](/java/什么时候会用到线程安全.md)
+  * [什么时候会用到线程安全](/java/什么时候会用到线程安全.md)
   * [从javaNIO到netty](/java/从javaNIO到netty.md)
   * [大白话聊io模型](/java/大白话聊io模型.md)
   * [spring的国际化功能](/java/spring的国际化功能.md)
@@ -33,3 +33,5 @@
   - [数据库id](/database/数据库id.md)
   - [权限](/database/权限.md)
   - [浅析ES和Mysql原理上的区别](/database/ES和Mysql区别.md)
+- 还不成熟的内容
+  - [k8s浅浅学习与理解](/不成熟的/k8s.md)
