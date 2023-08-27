@@ -34,6 +34,6 @@
   - [权限](/database/权限.md)
   - [浅析ES和Mysql原理上的区别](/database/ES和Mysql区别.md)
 - 算法
-  - [kmp浅析](/算法/kmp.md)
+  - [kmp字符串匹配算法浅析](/算法/kmp.md)
 - 还不成熟的内容
   - [k8s浅浅学习与理解](/不成熟的/k8s.md)
