@@ -21,3 +21,71 @@
    1. 会先判断两个key对象的hashcode值是不是一样，且key的值key的值是否一样。也就是两个对象的hashcode和eaques的到的值要一样(基础类型Long这样的，只要值一样，这俩方法的默认是一样的)。然后就会用新的value值覆盖。
    2. 如果上一步没有判断成功，下一步就会继续判断，这个节点是不是树节点（红黑树），然后把value插入到红黑树上去。
    3. 如果上一步又没有判断成功，那么这个节点肯定就是一个普通的节点，那么就是普通的链表结构了。插入到这个链表上就好了，在遍历这个链表的时候同样会做1的判断。
+
+4. 接下来会讲解hashmap put方法的源码。java的源码我觉得写的恶心，完全就是为了不想让别人好好的读，瞎求写。
+
+   > ```java
+   > 
+   > 
+   > /**
+   > 这里的这一步hash是hashmap的哈希算法的第一步，可以把这个函数看作是hash函数，
+   > 也可以看作只是一个 将key这个对象的hashcode的值变的小一点的一个减值函数。就是这么简单
+   > **/ 
+   >  static final int hash(Object key) {
+   >         int h;
+   >      //这一步就很有意思，h=key.hashCode()；明明可以单独写一行，这非要到表达式里面，就这么省行数？但是也没省代码量啊
+   >         return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+   >     }
+   > 	//这就是put函数
+   >   public V put(K key, V value) {
+   > 	  //参数会利用上一个函数，取一下对象的hashcode值，后面两个参数可以忽略一下
+   >         return putVal(hash(key), key, value, false, true);
+   >     }
+   >  
+   >  final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+   >                    boolean evict) {
+   > 		//tab是hashmap的节点数组 p是hash运算得到的节点的数组 n是数组的长度 i是
+   >         Node<K,V>[] tab; Node<K,V> p; int n, i;
+   >         if ((tab = table) == null || (n = tab.length) == 0)
+   > 			//这里是
+   >             n = (tab = resize()).length;
+   >         if ((p = tab[i = (n - 1) & hash]) == null)
+   >             tab[i] = newNode(hash, key, value, null);
+   >         else {
+   >             Node<K,V> e; K k;
+   >             if (p.hash == hash &&
+   >                 ((k = p.key) == key || (key != null && key.equals(k))))
+   >                 e = p;
+   >             else if (p instanceof TreeNode)
+   >                 e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
+   >             else {
+   >                 for (int binCount = 0; ; ++binCount) {
+   >                     if ((e = p.next) == null) {
+   >                         p.next = newNode(hash, key, value, null);
+   >                         if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
+   >                             treeifyBin(tab, hash);
+   >                         break;
+   >                     }
+   >                     if (e.hash == hash &&
+   >                         ((k = e.key) == key || (key != null && key.equals(k))))
+   >                         break;
+   >                     p = e;
+   >                 }
+   >             }
+   >             if (e != null) { // existing mapping for key
+   >                 V oldValue = e.value;
+   >                 if (!onlyIfAbsent || oldValue == null)
+   >                     e.value = value;
+   >                 afterNodeAccess(e);
+   >                 return oldValue;
+   >             }
+   >         }
+   >         ++modCount;
+   >         if (++size > threshold)
+   >             resize();
+   >         afterNodeInsertion(evict);
+   >         return null;
+   >     }
+   > ```
+   >
+   > 
