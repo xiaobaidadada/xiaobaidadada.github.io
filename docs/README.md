@@ -2,6 +2,10 @@
 
 这个博客用于平时笔记总结。
 
+# 联系邮箱
+
+`lanptt@qq.com`
+
 # 游戏
 
 [五子棋](https://xiaobaidadada.github.io/v1/wzq/wzq.html)
