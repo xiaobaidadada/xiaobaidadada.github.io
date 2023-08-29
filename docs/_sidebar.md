@@ -3,12 +3,10 @@
 - [首页](/README.md)
 
 * java
+  * [java集合原理分析](/java/java集合实现原理.md)
   * [什么时候会用到线程安全](/java/什么时候会用到线程安全.md)
-  * [从javaNIO到netty](/java/从javaNIO到netty.md)
   * [大白话聊io模型](/java/大白话聊io模型.md)
-  * [spring的国际化功能](/java/spring的国际化功能.md)
   * [浅谈锁](/java/浅谈锁.md)
-  
 * 架构
   * [远程调用选哪个](arch/remote.md)
   * [单体应用怎么转变为分布式项目](/arch/单体应用怎么转变为分布式项目.md)
@@ -37,3 +35,5 @@
   - [kmp字符串匹配算法浅析](/算法/kmp.md)
 - 还不成熟的内容
   - [k8s浅浅学习与理解](/不成熟的/k8s.md)
+  - [从javaNIO到netty](/java/从javaNIO到netty.md)
+  - [spring的国际化功能](/java/spring的国际化功能.md)
