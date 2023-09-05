@@ -6,6 +6,12 @@
 
 这三点其实只有在java语言下才需要注意，别的语言不一定需要注意这三点，这三点完全是由于jvm的执行结构造成的。大量的多线程编程所需要的一种资源通常都是对象，而不是集合，资源的数量只有一个，符合锁的资源特征使用情况，所以锁被用的最毒。
 
+## 其他特点
+
+由于java语言的特性，还需要知道这些特性
+
+1. 线程函数的可重入性：一个线程的函数，多次执行，会多次获取锁，这个要看锁支持不支持可重入性了。但是对于别的语言，要看线程模型是什么了，可能不会存在这个情况。
+
 # synchronized关键字
 
 这个多线程工具是java语言特性提供的，他表示对类加锁，或者对类的实例对象加锁。同时也定义的临界区代码。
@@ -62,10 +68,11 @@ AQS是管程的实现，资源信号量是锁，是对象。synchronize也是管
 ## AQS类的组成
 
 1. 有一个`private volatile int state`用于表达当前资源对象的状态，虽然只是一个int但并不一定只能表示一个资源，可以把int看做32位的32个二元资源。
-2. 一个先入先出的线程队列（node节点内部类代表线程）。依靠head和tail两个属性指针控制队列的控制。
+2. 一个先入先出的线程队列（node节点内部类代表线程）。依靠head和tail两个属性指针控制队列的控制。但是会不会严格使用这个队列，要看实际使用，有些锁，会先进行cas尝试。
 3. 一些模版方法，acquire（获取同步状态，获取资源，线程运行，否则入队列）；这样的获取资源运行函数，还有可以设置超时的。还有共享模式的。共享模式和独占模式的区别是，独占模式只考虑资源状态能不能拿到值，共享模式是资源数量是否大于0，多个线程一起并发的执行。release（释放同步状态，释放同步资源，释放完并唤醒线程队列）；这些模版方法都是final的，不允许修改。
 4. 抽象方法，一共五个，tryAcquire，tryRelease，tryAcquireShared，tryReleaseShared，isHeldExclusively；这些五个方法，只用于获取state，也就是获取资源，释放资源的操作，资源具体是什么含义，用这些方法来指明，这些方法会被相应的独占式acquire。。。模版方法等调用。他们是一一对应的。因为AQS是一个工具，只负责线程的队列控制，堵塞等控制行为，对于资源的控制行为需要具体实现才行。
 5. ConditionObject，一个Condition接口的实例，作用是用于独立提供一个FIFO线程队列，线程自己将自己await到这个队列，别的线程也可以单独对这个线程进行唤醒。当然这些线程这样就不一定会存在于AQS的队列中了。
+6. 他有两种模式，其实就是两套acquire和release函数，前面也提了。
 
 ## AQS工具类的使用场景
 
@@ -75,17 +82,72 @@ AQS不会直接作为一个工具类用于业务代码中，而是当你想做�
 
 Lock接口是锁资源的接口，java中基于lock的实现有很多，这些lock接口的实现类，大多都是利用AQS作为工具实现的。至于其他类型的资源，目前并没有接口和实现类。对于锁，下面这些锁，平时的业务开发是可能会利用到的。
 
+lock接口包括了对象的wait等函数，而lock锁对象自己包含这一些操作。
+
+java中对于lock接口的实现锁利用的工具类只有三个，ReentrantReadWriteLock（内部实现ReadLock，WriteLock，对外实现ReadWriteLock），ReentrantLock，StampedLock；均实现了超时获取锁，就是不断的判断时间戳进行cas呗。
+
+所有的超时获取try方法，失败以后不会进入堵塞队列。
+
 ## ReentrantLock是如何利用AQS实现的
 
+这个是lock接口的主要实现类。是一个功能标准的锁。和synchronize的功能几乎一样。它的lock接口实现，几乎是直接调用的AQS的函数，并没有别的指令，所以我们直接看它的特点，以及看它是如何实现AQS的五个抽象函数（就是trylock这些），从而提供这些特点。
+
+他也是可重入的，就是指这个线程的函数可以执行多次。他并没有实现AQS的共享trylock等相关函数。
+
+1. 公平与非公平：他有两个内部的公平和非公平sync类继承AQS，公平的trylock在已经被锁的时候会直接返回错误，AQS模版方法就会直接执行剩下的操作了，入队列，唤醒队列第一个线程...。非公平的trylock在已经被锁的时候会**进行一次cas尝试**，获取到了就直接执行否则才会入队列。**默认是非公平**。
+2. 可重入性：state的值是可累计的，有一个exclusiveOwnerThread表示当前执行线程，不管是公平还是非公平，当state不为0的时候被锁的时候，trylock方法都会先判断竞争的线程是否是自己，是的话会累积state的值，最后release释放state为0；
 
 
 
+## ReentrantReadWriteLock是如何利用AQS实现的
+
+ReentrantReadWriteLock实现了ReadWriteLock接口，这个接口有返回两个lock接口实现类方法，虽然state只是一个int变量，这里ReentrantReadWriteLock将state按32位分为两部分（不同vm或者java版本可能大小不一样，但是肯定是偶数位，肯定可以分为两部分），分别表示两个state，使用&等按位计算操作控制，用于提供两个小值范围内的int state，分别用于表示读状态锁资源和写状态锁资源。这两个读写锁，不获取也会一直存在ReentrantReadWriteLock类中。
+
+分析的方式和ReentrantLock的一样。这里有一个sync继承了AQS内部类，同时它的trylock等方法，成了模版方法，他提供了readerShouldBlock，writerShouldBlock两个抽象方法用于公平不公平的策略接口，选择公平不公平的sync实现类。两个lock的实现类，读写锁，这两个实现类都引用了sync内部类，所以虽然对外提供两个类，但是这俩类都是操作的同一个AQS内部类。
+
+对于ReadLock实现内部类，它使用sync的共享资源接口，对于WriteLock实现内部类，它使用sync的独占共享资源接口。
 
 
 
+1. 公平与非公平：这个也支持原理也是和前面ReentrantLock的一样，在获取不到资源的时候，会进行cas比较。这里需要它提供的抽象方法返回是不是公平的策略。对于state的所有操作都采用位移和位与方式；
+2. 读锁能够拿到最大的锁资源是，65535，这取决于int的一半位数是16位。
+3. 可重入性实现：对于读锁不存在这个问题，因为任意个线程都可以进入，不存在竞争堵塞。对于写锁，原理和上面的ReentrantLock一样。
+4. 当有写锁的时候，读锁无法添加会失败进度堵塞。写锁进入的时候判断的是整个state，有写锁，有读锁都不行。将读锁变为写锁（称为锁降级，怎么会有这么sb的名字）需要自己手动先调用写锁释放，然后加读锁。
 
 
 
+## StampedLock高性能读写锁
 
+这个类并没有直接继承lock接口，也没有使用AQS。它提供了ReentrantReadWriteLock的基本方法，并没有报漏出单独的读和写锁用于外部控制；
 
+他同样有一个FIFO队列，一个int的state；内部提供独立的读，写，读写三个视图lock接口可以用于独立获取控制这个锁。
+
+他不是可重入的。
+
+他有三种获取锁的方式，对应三种模式。读，写，乐观读。读，写，与ReentrantReadWriteLock提供的规则相同。但是这个乐观读，只要不处于写锁状态，都可以获取，而且乐观读锁，不会像读锁一样禁止别的线程获取写锁。
+
+所有获取锁的方法都会返回一个long stamp，这不是时间戳，而是当前的state与模式表达的状态，这个值用于释放锁函数。但是乐观读锁方法获取的stamp没有必要释放.
+
+有一个validate方法用于获取当前的stamp有没有被修改，线程自己的stamp能不能关闭锁。也支持超时获取，而不会进入队列，所有的try获取方法都不会进入堵塞队列。
+
+# juc下其他的类
+
+前面的锁是属于`java.util.concurrent.locks`下的工具，用于同步的工具除了锁，还有很多别的工具类在`java.util.concurrent.`可以使用。
+
+1. atomic原子类，提供了操作原子对象的方法，他们提供的方法都是将多个方法合并为同一个方法，在执行期间内别的线程无法使用操作。
+2. CompletableFuture，与future接口相比，这个返回之后可以提供then这样的方法作为异步处理。
+3. ConcurrentHashMap：1.8 版本的java以前是采用分段的方式，让每个段加写锁。1.8以后使用和hashmap一样的实现方式，没有使用hashmap，而是方法和hashmap的一样，在put的时候，如果数组节点是null，会使用cas的办法尝试设置值，不需要锁。如果数组节点不是空的，会使用synchronized锁住数组节点进行扩容。hashTable是一个只采用数组，没有链表的关联数组容器，所有方法都加synchronize。
+4. ConcurrentLinkedDeque不会堵塞，所有控制节点的操作都通过cas进行，无限次尝试进行。
+5. ConcurrentSkipListMap 是一种顺序插入关联数组元素的线程安全map（插入遍历是同一个顺序），采用跳表实现，使用volatile关键字保证线程安全。对每个元素都加volatile；volatile会比cas和synchronized更花时间。
+6. ConcurrentSkipListSet基于ConcurrentSkipListMap；
+7. CopyOnWriteArrayList  读的时候没有锁，写的时候会加锁，并复制一个新的数组扩容副本。
+8. CopyOnWriteArraySet 基于CopyOnWriteArrayList；
+9. CountDownLatch：提供一个计算值和一个队列，当计数值为0的时候会唤醒所有队列上的线程。
+10. ForkJoinTask 将多个任务分解为子线程，执行完加在一起，用于数字计算密集任务。
+11. CyclicBarrier 多个线程都完成以后才会执行一个方法。
+12. DelayQueue 延时队列，get元素可以延时获取。
+13. Exchanger 两个线程交换数据，一个执行到使用Exchanger后，必须等另一个回应数据才能继续执行。
+14. Phaser 不同阶段执行不同的线程。
+15. Semaphore 信号量，提供安全的获取信号量的方法。如果资源为0，线程会一直堵塞。
+16. TimeUnit 时间单位转换，定时或者延时线程接下来的行为。
 
