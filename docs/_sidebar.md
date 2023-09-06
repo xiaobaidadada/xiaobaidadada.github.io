@@ -7,7 +7,7 @@
   * [juc一些工具类原理分析与使用](/java/java多线程编程相关工具原理.md)
   * [大白话聊io模型](/java/大白话聊io模型.md)
   * [浅谈锁](/java/浅谈锁.md)
-* 项目结构
+* 项目实践
   * [浅谈分布式项目](/arch/浅谈分布式项目.md)
   * [流量控制](/arch/流量控制.md)
 
@@ -20,13 +20,15 @@
 - 经验总结
   - [问题总结](/code/issue.md)
   - [循环和递归要使用哪个](/code/循环和递归选哪个.md)
-- 数据库
+- 数据管理软件
   - [NoSql与Sql数据库的区别](/database/NoSql与Sql数据库的区别.md)
   - [数据库id](/database/数据库id.md)
   - [权限](/database/权限.md)
   - [浅析ES和Mysql原理上的区别](/database/ES和Mysql区别.md)
-- 算法
+  - [redis相关](/database/redis相关.md)
+- 数据结构与算法
   - [kmp字符串匹配算法浅析](/算法/kmp.md)
+  - [redis中的数据结构](/算法/redis中使用到的数据结构.md)
 - 还不成熟的内容
   - [k8s浅浅学习与理解](/不成熟的/k8s.md)
   - [从javaNIO到netty](/java/从javaNIO到netty.md)
