@@ -39,3 +39,158 @@ docker 这个软件在发展的过程中到现在，有一些核心点：
 # K8s与分布式
 
 有了k8s，其实就不怎么需要网关了，注册中心也不再需要。这个怎么使用以后再说吧，其实为啥使用docker感觉没感觉，是因为所接触的项目级别还不到这个程度。k8s就更不用说了，也是因为组织的基础设施还不到这个程度，没有这个需求，体会不到实际的意义。分布式的那一套比如spring cloud其实是小型项目需要的，超大型的项目需要k8s这样的分布式基础设施，但是很多公司其实连分布式都不需要的就够了。当技术发展越来越成熟和便利化后，普通开发者也可以直接使用工具搭建这样的大型设施框架，但是这不是必须也没必要。
+
+# 概念
+
+1. 容器 = 运行环境隔离（linux才支持）+ ”**一个**“ 进程 + 文件(环境)；
+
+2. 镜像 = 将容器临时文件与固定文件都变成静态的文件。
+
+3. 容器编排 = 将一个或者多个容器按照指定的命令有顺序的控制执行。
+
+   > k8s 就是容器编排工具；容器编排工具可以将多个主机上的容器变成一个整体上的软件。
+
+4. 调度：就是安排，控制程序在特定的时间有计划的做出一些行为。
+
+# k8s组成
+
+1. master管理节点
+
+   包含
+
+   1. kube-apiserver：接受api的，提供http接口。其它组件都是通过这个来查询数据的。直接操作 etcd，别组件的都不行。
+   2. kube-scheduler：调度器，安排器
+   3. kube-controller-manager：控制容器的组件
+   4. etcd：用于k8s数据保存的
+   5. **kubelet：用于运行PodSpecs指定的容器**，有客户端，也是控制k8s的命令行工具。它与kube-apiserver进行数据交互。
+   6. kube-proxy
+
+2. node工作节点
+
+   包含
+
+   1. **kubelet：用于运行PodSpecs指定的容器**
+   2. kube-proxy：网络代理用于实现服务(Service)概念
+
+工作原理：
+
+master节点，安装多个控制组件，各个控制组件，所有组件都与kube-api组件进行交互交互，kube-api是唯一与客户进行交互的组件。
+
+计算节点提供计算。运行pod等对象。
+
+控制k8s：
+
+1. 使用kubelet ，工作节点也可以安装，他与kube-api交互，修改 数据。
+2. 直接使用kube-api提供的http接口。
+
+# 安装部署k8s
+
+1. Minikube
+2. Kubeadm
+3. 二进制包
+4. rancher等容器工具
+
+# 二进制安装
+
+这里不会给出具体的命令，只是描述关键步骤，并给出为什么要做这一步的说明。
+
+1. 安装cfssl ，用于生成证书和私钥。
+
+   > PKI/TLS ，PKI是管理公钥证书的基础设施总称。TSL是SSL的后续版本，是一个安全传输层协议，对网络层的数据进行加密传输。
+   >
+   > cfssl 就是用来生成公钥证书(CA)的；也会生成私钥。ca证书不仅包含了公钥，还包含了服务器过期时间等信息。
+
+2. 在master节点安装etcd，其实安装在哪都行。是一个k-v数据库和redis差不多。支持ssl加密，所以可以用cfssl 给与服务器和客户端相应的公钥和私钥。
+
+3. 下载server-binaries，k8s的所有二进制安装包。
+
+4. 接下来分别启动kube-apiserver，kubectl，kube-controller-manager，kube-schedule，由于每个服务都是需要ssl的，所有都需要利用cfssl 生成独立的私钥和公钥证书。
+
+5. 每个node节点服务上，安装Containerd，kubelet （依然需要证书），kube-proxy(需要 指定master地址)等软件。
+
+# Kubeadm安装方式
+
+1. 每个节点都安装kubeadm、kubelet、kubectl，docker（最新的好像要安装cri-dockerd才行了运行容器用的）；每个服务都需要安装网络插件(calico插件)；
+2. 安装完以后，kubeadm init运行一下。这个节点就变成master节点了。
+3. 主节点会生成加入token，没用生成用kubeadm token token命令可以生成。
+4. node子节点，使用kubeadm join --token token 就可以加入masterj节点了。
+
+# 容器安装
+
+rancher官网可查看，很简单一个docker命令或者集群的也就是几行docker命令。
+
+
+
+# 使用上的抽象概念
+
+k8s提供的抽象概念就是我们使用的对象；这里的对象指的是，k8s操作的对象，与编程对象中的对象是不同的概念，这里的对象的结构的，以及意义都是k8s特有的。k8s通过定义这些对象从而表示整个集群的状态进行容器编排。
+
+通过使用yml文件（也支持json），来定义对象，定义数据；每个对象都有以下关键概念：
+
+1. apiVersion，需要指明这个对象所属的组，版本，这些定义是8s提供的，可以通过kubectl api-versions命令查看，不是自己指定对象的版本而是选择。
+
+2. 类型：如 pod、deployment、statefulset、job、cronjob，不同的对象有不同的作用，有些不作为容器运行
+
+3. 元数据定义：定义这个对象的信息，比如名字，命名空间等信息。
+
+4. spec详细信息：用于定义具体的对象的详细信息，要符合版本和类型的格式
+
+   > 定义一个pod类型的，这个类型就是定义多个容器执行，所以必须元素肯定有，镜像，容器个数等参数；docker的镜像地址可以是是本地的（只要pod所在主机含有这个镜像就行，如果使用的是docker），也可以是私有的，或者共有的仓库。
+   >
+   > ```yml
+   > apiVersion: v1 #必选，版本号，例如v1
+   > kind: Pod #必选，Pod 
+   > metadata: #必选，元数据 
+   >   name: nginx #必选，Pod名称 
+   >   labels: #自定义标签 
+   >      app: nginx #自定义标签名字 
+   > spec: #必选，Pod中容器的详细定义 
+   >      containers: #必选，Pod中容器列表，一个pod里会有多个容器 
+   >         - name: nginx #必选，容器名称 
+   >           image: nginx #必选，容器的镜像名称 
+   >           imagePullPolicy: IfNotPresent # [Always | Never | IfNotPresent] #获取镜像的策略 Alawys表示下载镜像 IfnotPresent表示优先使用本地镜像，否则下载镜像，Nerver表示仅使用本地镜像 
+   >           ports: #需要暴露的端口库号列表 
+   >           - containerPort: 80 #容器需要监听的端口号 
+   >      restartPolicy: Always # [Always | Never | OnFailure]#Pod的重启策略，Always表示一旦不管以何种方式终止运行，kubelet都将重启，OnFailure表示只有Pod以非0退出码退出才重启，Nerver表示不再重启该Pod 
+   > 
+   > ```
+   >
+   > 定义一个service类型的，这是一个服务对象，所以需要定义端口和转发的端口等信息。
+   >
+   > ```yml
+   > apiVersion: v1
+   > kind: Service
+   > metadata:
+   >   name: service-hello
+   >   labels:
+   >   name: service-hello
+   > spec:
+   >   type: NodePort      #这里代表是NodePort类型的,另外还有ingress,LoadBalancer
+   >   ports:
+   >   - port: 80          #这里的端口和clusterIP(kubectl describe service service-hello中的IP的port)对应，即在集群中所有机器上curl 10.98.166.242:80可访问发布的应用服务。
+   >     targetPort: 8080  #端口一定要和container暴露出来的端口对应，nodejs暴露出来的端口是8081，所以这里也应是8081
+   >     protocol: TCP
+   >     nodePort: 31111   # 所有的节点都会开放此端口30000--32767，此端口供外部调用。
+   >   selector:
+   >     run: hello         #这里选择器一定要选择容器的标签，之前写name:kube-node是错的。
+   > 
+   > ```
+   >
+   > 
+
+## 对象说明
+
+这些对象**主要使用的**对象，可以按功能大致分为三类
+
+1. 工作负载，用于定义执行的容器。每个容器都有自己的虚拟ip。
+2. 服务发现，用于定义master部的端口与多个工作负载的映射。常用的映射是service类型中的端口映射（不考虑是哪个虚拟ip）。
+3. 存储，用于定义一些数据，用于别的类型的对象中使用。
+
+## 对象的控制
+
+可以使用`kubectl apply -f /path/to/deployment.yaml`这样的命令，不过对于rancher这样的控制台控制是更方便的。
+
+1. 常用命令地址博客推荐[Kubectl常用命令详解_kubectl apply -k-CSDN博客](https://blog.csdn.net/weixin_44631350/article/details/89450781)
+
+1. 官网命令地址[命令行工具 (kubectl) | Kubernetes](https://kubernetes.io/zh-cn/docs/reference/kubectl/)
+
