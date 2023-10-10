@@ -5,6 +5,7 @@
 * java
   * [java集合原理分析](/java/java集合实现原理.md)
   * [juc一些工具类原理分析与使用](/java/java多线程编程相关工具原理.md)
+  * [jvm浅析](/java/jvm浅析.md)
   * [浅谈io模型](/java/大白话聊io模型.md)
   * [浅谈锁](/java/浅谈锁.md)
   * [一个权限实现方案](/java/一个权限实现方案.md)
