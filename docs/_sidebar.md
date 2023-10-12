@@ -33,6 +33,9 @@
   - [聚集索引和非聚集索引](/other/聚集索引和非聚集索引.md)
   - [gradle学习笔记](/other/gradle学习笔记.md)
   - [名词翻译辨认](/other/名词翻译辨认.md)
+- 网络与服务器
+  - [自建服务器](/网络与服务器/自建服务器.md)
+  
 - 还不成熟的内容
   - [k8s浅浅学习与理解](/不成熟的/k8s.md)
   - [从javaNIO到netty](/java/从javaNIO到netty.md)
