@@ -24,7 +24,7 @@
   - [数据库id](/database/数据库id.md)
   - [redis相关](/database/redis相关.md)
   - [mysql相关](/database/mysql相关.md)
-  - [mysql相关](/database/数据软件比较.md)
+  - [数据软件比较](/database/数据软件比较.md)
 - 数据结构与算法
   - [kmp字符串匹配算法浅析](/算法/kmp.md)
   - [redis中的数据结构](/算法/redis中使用到的数据结构.md)
