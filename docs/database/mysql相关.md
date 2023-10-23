@@ -188,6 +188,7 @@ select * from a,b on a=1 where b =1
 - explain语句可以返回一个特定的列，展示查询语句可能的执行情况，索引执行情况。
 - 5.6以后版本的mysql使用optimizer_trace可以查看查询语言可能有什么执行方案，最终选择了哪个。
 - Buffer Pool是InnoDB引擎申请的缓存空间，可以使用SHOW ENGINE INNODB STATUS语言查看这个空间的状态。
+- 某个联合唯一索引，某个列的值为null会使唯一主键失效；
 
 
 
