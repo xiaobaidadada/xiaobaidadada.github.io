@@ -1,2 +1,2 @@
 
-docsify serve docs
+npm list -g docsify-cli && docsify serve docs
