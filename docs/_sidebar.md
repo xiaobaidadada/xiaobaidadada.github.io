@@ -14,6 +14,8 @@
   * [js语法特性](/js/js特性.md)
   * [浅析nodeJS](/js/nodejs浅析.md)
   * [动态内存分析](/编译/动态内存分析.md)
+  * [node架构与addon插件](/js/node架构.md)
+  * [electron加密](/js/electron加密.md)
   
 * 项目实践
   * [浅谈分布式项目](/arch/浅谈分布式项目.md)
