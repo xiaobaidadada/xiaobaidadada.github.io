@@ -16,6 +16,7 @@
   * [动态内存分析](/编译/动态内存分析.md)
   * [node架构与addon插件](/js/node架构.md)
   * [electron加密](/js/electron加密.md)
+  * [v8内存管理](/js/v8内存管理.md)
   
 * 项目实践
   * [浅谈分布式项目](/arch/浅谈分布式项目.md)
