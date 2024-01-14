@@ -57,6 +57,7 @@
   - [傅里叶变换浅析](/数学/傅里叶变换.md)
 - 实际使用例子
     - [getway](/arch/网关.md)
+    - [seata分布式事物](/java/分布式事物.md)
 - 还不成熟的内容
   - [k8s浅浅学习与理解](/不成熟的/k8s.md)
   - [从javaNIO到netty](/java/从javaNIO到netty.md)
