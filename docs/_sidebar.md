@@ -10,6 +10,7 @@
   * [浅谈锁](/java/浅谈锁.md)
   * [一个权限实现方案](/java/一个权限实现方案.md)
   * [浅析大数据](/java/大数据浅析.md)
+  * [分布式锁](/java/分布式锁.md)
 * js 
   * [js语法特性](/js/js特性.md)
   * [浅析nodeJS](/js/nodejs浅析.md)
@@ -17,7 +18,6 @@
   * [node架构与addon插件](/js/node架构.md)
   * [electron加密](/js/electron加密.md)
   * [v8内存管理](/js/v8内存管理.md)
-  
 * 项目实践
   * [浅谈分布式项目](/arch/浅谈分布式项目.md)
   * [流量控制](/arch/流量控制.md)
