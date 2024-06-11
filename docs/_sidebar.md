@@ -56,8 +56,6 @@
 - 数学
   - [复数浅析由来](/数学/复数由来浅析.md)
   - [傅里叶变换浅析](/数学/傅里叶变换.md)
-- 还不成熟的内容
+- 学习笔记
   - [k8s浅浅学习与理解](/不成熟的/k8s.md)
-  - [从javaNIO到netty](/java/从javaNIO到netty.md)
-  - [spring的国际化功能](/java/spring的国际化功能.md)
 
