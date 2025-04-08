@@ -8,4 +8,4 @@
 
 # 链接
 
-[五子棋游戏](https://xiaobaidadada.github.io/v1/wzq/wzq.html)
+[五子棋游戏](https://xiaobaidadada.github.io/docs/v1/wzq/wzq.html)
