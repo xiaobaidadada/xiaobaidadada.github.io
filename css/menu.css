@@ -7,22 +7,18 @@
     top: 4em;
     left: 0;
     z-index: 1;
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: auto;
+    bottom: 0; /* 或 height: 100vh; */
+    right: 0;
+    overflow: auto;
 }
 
 
 @media (max-width: 736px) {
     .menu-mobile {
-        top: 0;
-        z-index: 1002;
         background: #fff;
-        height: 100%;
         width: 16em;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         transition: .1s ease left;
-        left: -17em;
     }
     .menu-mobile-hidden {
         display: none;

@@ -123,21 +123,8 @@
 }
 
 
-.github-corner {
-    border-bottom: 0;
-    position: fixed;
-    right: 0;
-    text-decoration: none;
-    top: 0;
-    z-index: 1;
-}
-.github-corner a {
 
-}
-
-.github-corner svg {
-    color: #42b983 ;
-    fill: #fafafa;
-    height: 4rem;
-    width: 80px;
+.github-corner image {
+    height: 2rem;
+    width: 2rem;
 }
