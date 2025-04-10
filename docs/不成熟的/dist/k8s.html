@@ -1,0 +1,251 @@
+<h1>容器</h1>
+<p>容器其实在 docker 之前就有了这个概念，只不过 docker 提出的理念，软件使用方法，还是开源的，吸引到了很多人使用，所以 docker 就变成容器的代表了，当然我觉得还是因为开源免费才能火的。</p>
+<p>docker 这个软件在发展的过程中到现在，有一些核心点：</p>
+<ol>
+<li>
+<p>容器：容器就是一个进程，或者进程集合（第一个进程可以是 bash 他又可以启动别的进程）</p>
+</li>
+<li>
+<p>镜像：是一个分层的文件集合，包含程序文件，这些程序运行起来，就是容器，容器可以修改最顶层的文件，可以把这些文件再次打包变成一个镜像。</p>
+</li>
+<li>
+<p>容器运行时（容器runtimes）：runtime 在程序运行期间，运行的一切。也就是运行环境的意思。docker 的runtime是containerd，除此之外还有 rkt 等容器运行时软件。他的作用发生在镜像程序运行前，限制进程的资源范围。进程运行中，使用一系列命令控制进程（也就是容器）。</p>
+<blockquote>
+<p>值得一提的是，不同的runtime，支持的镜像可能是不同的，但是 krt 支持 docker 的。</p>
+</blockquote>
+</li>
+<li>
+<p>OCI ：一个容器runtime的规范，所有的runtime都要满足这个规范。就像 java 语言有很多不同的 jdk 版本实现一样。</p>
+</li>
+</ol>
+<h1>容器的好处是什么</h1>
+<p>说到容器的好处，很多人会说一堆特点，可移植、环境隔离、执行在真实物理机而非 Vm，打包方便等。但是一个东西，他既然存在，那么肯定有一个决定性的特点，而不是一堆特点的组合。docker 的决定性的特点就是，<code>可以让，一个程序，和它所需要的 VM 和配置文件一起打包成镜像</code>；这就是开发者最需要的事情，对于 java 项目而言，jvm 版本可能会有很多，这个是刚需，对于别的比如前端或者 go 而言，程序所需要的一堆配置文件，代码，就可以通过容器进行整体替换，而不是改变虚拟机；</p>
+<p>所以容器的最大特点就是，一个软件安装，肯定是需要生成一堆代码，一堆目录的，这些文件会散落在主机文件系统的各个地方。容器可以把这些文件运行在容器中，满足程序的需要，又解决了主机用户（大多时候就是开发者自己）不想让程序污染主机文件的需求。</p>
+<p>一个容器指的是一个软件，而不是多个软件，因为一个容器运行，只能运行一个软件，多个软件同时运行，也只是一个进程的子线程。</p>
+<h1>k8s是什么</h1>
+<p>在定义一个东西是什么的时候，我们可以从很多的角度去定义，可以从作用来定义，也可以设计目的来定义，或者通过特点来定义，或者类比来定义。在给 k8s 下定义之前，我们要先明确，一个软件，很多时候，是由很多个程序组成的，就是分布式项目，需要数据库程序，需要网关，需要功能程序，等等。这多个小软件，互相调用组成了一个大的软件，他们整体表现出的就只有一个软件。下面从两个角度来定义 K8s；</p>
+<ol>
+<li>
+<p>作用角度：k8s 是用于将多个小软件（数据库、网关、、、）组成一个大软件的运行平台框架。他能够保证这些容器（程序），之间的项目调用，能够合理的安排他们到合适的位置上运行，既保证他们的项目作用，又能保证他们的稳定性，比如自动恢复功能。</p>
+<blockquote>
+<p>值得一提的是，并不只有k8s 具有这样的功能，docker Compose和Swarm也可以做到，让 k8s 能够流行起来的原因是，k8s 采用和 springboot 一样的配置文件，来控制程序的运行。程序员就喜欢这样简洁的控制功能。而不是用一堆命令去控制集群。</p>
+</blockquote>
+</li>
+<li>
+<p>从类比角度：k8s 就是容器的容器，k8s 内部运行着多个容器，对外提供只提供一个接口。</p>
+</li>
+</ol>
+<h1>K8s与分布式</h1>
+<p>有了k8s，其实就不怎么需要网关了，注册中心也不再需要。这个怎么使用以后再说吧，其实为啥使用docker感觉没感觉，是因为所接触的项目级别还不到这个程度。k8s就更不用说了，也是因为组织的基础设施还不到这个程度，没有这个需求，体会不到实际的意义。分布式的那一套比如spring cloud其实是小型项目需要的，超大型的项目需要k8s这样的分布式基础设施，但是很多公司其实连分布式都不需要的就够了。当技术发展越来越成熟和便利化后，普通开发者也可以直接使用工具搭建这样的大型设施框架，但是这不是必须也没必要。</p>
+<h1>概念</h1>
+<ol>
+<li>
+<p>容器 = 运行环境隔离（linux才支持）+ ”<strong>一个</strong>“ 进程 + 文件(环境)；</p>
+</li>
+<li>
+<p>镜像 = 将容器临时文件与固定文件都变成静态的文件。</p>
+</li>
+<li>
+<p>容器编排 = 将一个或者多个容器按照指定的命令有顺序的控制执行。</p>
+<blockquote>
+<p>k8s 就是容器编排工具；容器编排工具可以将多个主机上的容器变成一个整体上的软件。</p>
+</blockquote>
+</li>
+<li>
+<p>调度：就是安排，控制程序在特定的时间有计划的做出一些行为。</p>
+</li>
+</ol>
+<h1>k8s组成</h1>
+<ol>
+<li>
+<p>master管理节点</p>
+<p>包含</p>
+<ol>
+<li>kube-apiserver：接受api的，提供http接口。其它组件都是通过这个来查询数据的。直接操作 etcd，别组件的都不行。</li>
+<li>kube-scheduler：调度器，安排器</li>
+<li>kube-controller-manager：控制容器的组件</li>
+<li>etcd：用于k8s数据保存的</li>
+<li><strong>kubelet：用于运行PodSpecs指定的容器</strong>，有客户端，也是控制k8s的命令行工具。它与kube-apiserver进行数据交互。</li>
+<li>kube-proxy</li>
+</ol>
+</li>
+<li>
+<p>node工作节点</p>
+<p>包含</p>
+<ol>
+<li><strong>kubelet：用于运行PodSpecs指定的容器</strong></li>
+<li>kube-proxy：网络代理用于实现服务(Service)概念</li>
+</ol>
+</li>
+</ol>
+<p>工作原理：</p>
+<p>master节点，安装多个控制组件，各个控制组件，所有组件都与kube-api组件进行交互交互，kube-api是唯一与客户进行交互的组件。</p>
+<p>计算节点提供计算。运行pod等对象。</p>
+<p>控制k8s：</p>
+<ol>
+<li>使用kubelet ，工作节点也可以安装，他与kube-api交互，修改 数据。</li>
+<li>直接使用kube-api提供的http接口。</li>
+</ol>
+<h1>安装部署k8s</h1>
+<ol>
+<li>Minikube</li>
+<li>Kubeadm</li>
+<li>二进制包</li>
+<li>rancher等容器工具</li>
+</ol>
+<h1>二进制安装</h1>
+<p>这里不会给出具体的命令，只是描述关键步骤，并给出为什么要做这一步的说明。</p>
+<ol>
+<li>
+<p>安装cfssl ，用于生成证书和私钥。</p>
+<blockquote>
+<p>PKI/TLS ，PKI是管理公钥证书的基础设施总称。TSL是SSL的后续版本，是一个安全传输层协议，对网络层的数据进行加密传输。</p>
+<p>cfssl 就是用来生成公钥证书(CA)的；也会生成私钥。ca证书不仅包含了公钥，还包含了服务器过期时间等信息。</p>
+</blockquote>
+</li>
+<li>
+<p>在master节点安装etcd，其实安装在哪都行。是一个k-v数据库和redis差不多。支持ssl加密，所以可以用cfssl 给与服务器和客户端相应的公钥和私钥。</p>
+</li>
+<li>
+<p>下载server-binaries，k8s的所有二进制安装包。</p>
+</li>
+<li>
+<p>接下来分别启动kube-apiserver，kubectl，kube-controller-manager，kube-schedule，由于每个服务都是需要ssl的，所有都需要利用cfssl 生成独立的私钥和公钥证书。</p>
+</li>
+<li>
+<p>每个node节点服务上，安装Containerd，kubelet （依然需要证书），kube-proxy(需要 指定master地址)等软件。</p>
+</li>
+</ol>
+<h1>Kubeadm安装方式</h1>
+<ol>
+<li>每个节点都安装kubeadm、kubelet、kubectl，docker（最新的好像要安装cri-dockerd才行了运行容器用的）；每个服务都需要安装网络插件(calico插件)；</li>
+<li>安装完以后，kubeadm init运行一下。这个节点就变成master节点了。</li>
+<li>主节点会生成加入token，没用生成用kubeadm token token命令可以生成。</li>
+<li>node子节点，使用kubeadm join --token token 就可以加入masterj节点了。</li>
+</ol>
+<h1>容器安装</h1>
+<p>rancher官网可查看，很简单一个docker命令或者集群的也就是几行docker命令。</p>
+<h1>使用上的抽象概念</h1>
+<p>k8s提供的抽象概念就是我们使用的对象；这里的对象指的是，k8s操作的对象，与编程对象中的对象是不同的概念，这里的对象的结构的，以及意义都是k8s特有的。k8s通过定义这些对象从而表示整个集群的状态进行容器编排。</p>
+<p>通过使用yml文件（也支持json），来定义对象，定义数据；每个对象都有以下关键概念：</p>
+<ol>
+<li>
+<p>apiVersion，需要指明这个对象所属的组，版本，这些定义是8s提供的，可以通过kubectl api-versions命令查看，不是自己指定对象的版本而是选择。</p>
+</li>
+<li>
+<p>类型：如 pod、deployment、statefulset、job、cronjob，不同的对象有不同的作用，有些不作为容器运行</p>
+</li>
+<li>
+<p>元数据定义：定义这个对象的信息，比如名字，命名空间等信息。</p>
+</li>
+<li>
+<p>spec详细信息：用于定义具体的对象的详细信息，要符合版本和类型的格式</p>
+<blockquote>
+<p>定义一个pod类型的，这个类型就是定义多个容器执行，所以必须元素肯定有，镜像，容器个数等参数；docker的镜像地址可以是是本地的（只要pod所在主机含有这个镜像就行，如果使用的是docker），也可以是私有的，或者共有的仓库。</p>
+
+      <div class="code-block-with-copy">
+        <button class="copy-btn" data-code="apiVersion: v1 #必选，版本号，例如v1
+kind: Pod #必选，Pod 
+metadata: #必选，元数据 
+  name: nginx #必选，Pod名称 
+  labels: #自定义标签 
+     app: nginx #自定义标签名字 
+spec: #必选，Pod中容器的详细定义 
+     containers: #必选，Pod中容器列表，一个pod里会有多个容器 
+        - name: nginx #必选，容器名称 
+          image: nginx #必选，容器的镜像名称 
+          imagePullPolicy: IfNotPresent # [Always | Never | IfNotPresent] #获取镜像的策略 Alawys表示下载镜像 IfnotPresent表示优先使用本地镜像，否则下载镜像，Nerver表示仅使用本地镜像 
+          ports: #需要暴露的端口库号列表 
+          - containerPort: 80 #容器需要监听的端口号 
+     restartPolicy: Always # [Always | Never | OnFailure]#Pod的重启策略，Always表示一旦不管以何种方式终止运行，kubelet都将重启，OnFailure表示只有Pod以非0退出码退出才重启，Nerver表示不再重启该Pod" >复制</button>
+        <pre><code>apiVersion: v1 #必选，版本号，例如v1
+kind: Pod #必选，Pod 
+metadata: #必选，元数据 
+  name: nginx #必选，Pod名称 
+  labels: #自定义标签 
+     app: nginx #自定义标签名字 
+spec: #必选，Pod中容器的详细定义 
+     containers: #必选，Pod中容器列表，一个pod里会有多个容器 
+        - name: nginx #必选，容器名称 
+          image: nginx #必选，容器的镜像名称 
+          imagePullPolicy: IfNotPresent # [Always | Never | IfNotPresent] #获取镜像的策略 Alawys表示下载镜像 IfnotPresent表示优先使用本地镜像，否则下载镜像，Nerver表示仅使用本地镜像 
+          ports: #需要暴露的端口库号列表 
+          - containerPort: 80 #容器需要监听的端口号 
+     restartPolicy: Always # [Always | Never | OnFailure]#Pod的重启策略，Always表示一旦不管以何种方式终止运行，kubelet都将重启，OnFailure表示只有Pod以非0退出码退出才重启，Nerver表示不再重启该Pod</code></pre>
+      </div><p>定义一个service类型的，这是一个服务对象，所以需要定义端口和转发的端口等信息。</p>
+
+      <div class="code-block-with-copy">
+        <button class="copy-btn" data-code="apiVersion: v1
+kind: Service
+metadata:
+  name: service-hello
+  labels:
+  name: service-hello
+spec:
+  type: NodePort      #这里代表是NodePort类型的,另外还有ingress,LoadBalancer
+  ports:
+  - port: 80          #这里的端口和clusterIP(kubectl describe service service-hello中的IP的port)对应，即在集群中所有机器上curl 10.98.166.242:80可访问发布的应用服务。
+    targetPort: 8080  #端口一定要和container暴露出来的端口对应，nodejs暴露出来的端口是8081，所以这里也应是8081
+    protocol: TCP
+    nodePort: 31111   # 所有的节点都会开放此端口30000--32767，此端口供外部调用。
+  selector:
+    run: hello         #这里选择器一定要选择容器的标签，之前写name:kube-node是错的。" >复制</button>
+        <pre><code>apiVersion: v1
+kind: Service
+metadata:
+  name: service-hello
+  labels:
+  name: service-hello
+spec:
+  type: NodePort      #这里代表是NodePort类型的,另外还有ingress,LoadBalancer
+  ports:
+  - port: 80          #这里的端口和clusterIP(kubectl describe service service-hello中的IP的port)对应，即在集群中所有机器上curl 10.98.166.242:80可访问发布的应用服务。
+    targetPort: 8080  #端口一定要和container暴露出来的端口对应，nodejs暴露出来的端口是8081，所以这里也应是8081
+    protocol: TCP
+    nodePort: 31111   # 所有的节点都会开放此端口30000--32767，此端口供外部调用。
+  selector:
+    run: hello         #这里选择器一定要选择容器的标签，之前写name:kube-node是错的。</code></pre>
+      </div></blockquote>
+</li>
+</ol>
+<h2>对象说明</h2>
+<p>这些对象<strong>主要使用的</strong>对象，可以按功能大致分为三类</p>
+<ol>
+<li>
+<p>工作负载，用于定义执行的容器。每个容器都有自己的虚拟ip。</p>
+<ol>
+<li>一个pod对象就相当于一个电脑主机，主机内的容器就是多个程序。一个pod一个ip，容器没有自己的ip只有端口（程序的端口）。</li>
+</ol>
+</li>
+<li>
+<p>服务发现，用于定义master部的端口与多个工作负载的映射。常用的映射是service类型中的端口映射（不考虑是哪个虚拟ip）。</p>
+<ol>
+<li>service 类型对象：用于将多个pod的ip聚集成一个均衡请求，或者将端口做映射（适用于所有ip，不需要特定ip访问）。</li>
+<li>ingress 类型对象：类似nginx，根据路由转发请求到特定的service对象。</li>
+</ol>
+</li>
+<li>
+<p>存储，用于定义一些数据，用于别的类型的对象中使用。</p>
+</li>
+</ol>
+<h2>对象的控制</h2>
+<p>可以使用<code>kubectl apply -f /path/to/deployment.yaml</code>这样的命令，不过对于rancher这样的控制台控制是更方便的。</p>
+<ol>
+<li>
+<p>常用命令地址博客推荐<a href="https://blog.csdn.net/weixin_44631350/article/details/89450781">Kubectl常用命令详解_kubectl apply -k-CSDN博客</a></p>
+</li>
+<li>
+<p>官网命令地址<a href="https://kubernetes.io/zh-cn/docs/reference/kubectl/">命令行工具 (kubectl) | Kubernetes</a></p>
+</li>
+</ol>
+<h1>一些概念结论</h1>
+<p>有了以上讨论和实际操作阐述，我们可以得出以下一些结论思想概念</p>
+<ol>
+<li>
+<p>云原生：cloud+native，就是把本地的应用集合，部署到云服务器上。native本地开发指的是，多个服务直接的调用，直接用localhost这样，设置个端口号就知道在哪运行着了，或者用个192.168..ip指定另一个服务，就是直接写死ip，这样开发出来的软件可能设计到好多个服务同时启动了。cloud就是把这个本地的模型，部署到多个主机的云k8s或者别的平台上，维持着这些服务的关系，能让他们以集群的方式稳定运行，快速扩容机器提高计算能力。</p>
+<blockquote>
+<p>对于大型的多个服务构建起来的软件，另一种就是常见的就是分布式架构，使用一系列中间件做映射对应关系，比如注册中心，服务中心等。</p>
+<p>云原生相比分布式架构开发考虑的事要简单的多，根本不用设置什么yrml服务，注册什么服务，考虑中间件的部署关系，还需要手动启动多个容器注册到注册中心上，这样在本地开发的时候，就要考虑到云上怎么部署，而云原生就不用考虑这么多（但是也需要了解平台提供的功能，也需要考虑很多东西，但是开发模式和本地很像）。</p>
+</blockquote>
+</li>
+</ol>

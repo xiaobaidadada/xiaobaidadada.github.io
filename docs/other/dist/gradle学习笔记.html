@@ -1,0 +1,135 @@
+<p>实习两周了终于接触到了java项目，公司使用的gradle，我之前都是使用的maven，所以就学习了一下，做了下面这些笔记；</p>
+<h1>总结</h1>
+<p>先写一些总结内容，可以看完以后再来看这些：</p>
+<ul>
+<li>groovy是什么：他是一个基于java的动态语言（类似python了），相当于在jvm的基础上又加了一层虚拟，但是很弱，只是把代码翻译成了class，但是也很花时间；</li>
+<li>DSL领域对象语言是什么：是针对特定领域的编程语言的意思，和PSL通用语言是又分别的，比如html,xml,yaml,json这些语言都是特定领域的，而java，c，python这些具有 完全的计算能力是通用的；</li>
+<li>gradle是什么：他就是一个DSL语言，但是这个语言是由groovy编写的，而且支持groovy语法；语言内部的DSL，自己采用自己的语言的子集实现的；</li>
+<li>gradle能干嘛：可以统一管理jar，构建项目；</li>
+<li>和maven的区别，写插件的能力更强，对于普通程序员没有区别，对于spring，安卓这样的大公司的区别很大，相比maven可操作性更强；</li>
+</ul>
+<h1>groovy语言</h1>
+<p>是一个基于java的编程语言，是跟python一个等级的类似语言，也支持java语言；它也可以被编译成class文件；</p>
+<ol>
+<li>整个源代码就是一个脚本文件，和python一样，想直接写语句就直接写语句，想写类就写类，如果只写一个类，那么需要给类加上main函数，如果main函数的类和类外语句同时存在，这个类的main函数就不会被执行了；</li>
+<li>完全可以当作java代码来写</li>
+<li>是弱变量类型的，变量和函数都可以用def来定义</li>
+<li>函数默认是有返回值的，没写return最后一行就是返回值</li>
+<li>函数的参数可以是不限制数量的，也不需要定义类型和python一样</li>
+<li>没有反射有个类似的MOP</li>
+</ol>
+<p>还有其它很多的自定义语言，其它的数据类型等；</p>
+<p><a href="https://cloud.tencent.com/developer/article/1358357">Groovy快速入门看这篇就够了 - 腾讯云开发者社区-腾讯云 (tencent.com)</a></p>
+<p><a href="https://iowiki.com/groovy/groovy_dsls.html">Groovy - DSLS_学习Groovy|WIKI教程 (iowiki.com)</a></p>
+<p>所以动态语言都可以弱变量，静态的需要提前知道是什么类型是 强变量；</p>
+<p>根据groovy的功能，可以写出一个DSL，这个特定的DSL就是<strong>gradle</strong>；</p>
+<p>DSL是特定领域语言，html，yml就是这种语言，不过这些需要特定的运行环境，而Groovy可以设置一些方法参数，提供一种模型，只要这样写就可以被groovy的代码解析执行；（GPL与此相对应的通用语言，可以执行任何的语义有计算能力）；</p>
+<ul>
+<li><strong>闭包</strong>目前的含义就像，在类中定义类，在函数种定义函数，函数的函数或者类中的类可以直接调用外部的函数或者类的变量；或者给这些东西起的名字并不是类或者函数，就像groovy种的，其实就是函数；</li>
+</ul>
+<h1>一种由graoovy定义的DSL语言——Gradle</h1>
+<p>Gradle主要是由groovy的MOP和闭包功能实现的，MOP功能实现调用一个文件的哪些闭包；其实类也可以啊，但是网上都是说用的闭包，其实就是模块嘛，把函数放在类中，和把函数(闭包)放在函数种，其实区别不大；但是这样代码就简洁了；</p>
+<p>等于是定义了一个特定闭包groovy文件；</p>
+<p>maven是java写的，它的xml也是一个特定的DSL语言；为什么java不直接写出一个这样的grdle风格的构建工具呢，因为java的格式本身比较庞大，脚本类型的groovy可以达到代码编写的轻量，用java直接写构建工具就是maven中的各种插件，写插件就是java代码这是很麻烦的；主要来说，就是写代码不方便；性能当然没有java的好；</p>
+<h2>主要内容</h2>
+<ol>
+<li>
+<p>支持所有的groovy语法，可以写groovy代码</p>
+</li>
+<li>
+<p>输入gradle命令会自动查找<code>build.gradle</code>文件，其实文件可以放在任何位置，后缀也不是特定的；</p>
+<p>可以指定执行哪些任务，默认是执行全部任务；</p>
+</li>
+<li>
+<p>编写这个构建文件主要的工作就是编写各种<strong>任务闭包</strong>；</p>
+</li>
+<li>
+<p>gradle构建分为两个阶段进行</p>
+<ol>
+<li>先配置所有的闭包</li>
+<li>然后按顺序和依赖关系去执行这些闭包内的<strong>任务</strong></li>
+</ol>
+</li>
+<li>
+<p>通过官方提供的闭包，来实现各种以来配置等功能</p>
+</li>
+<li>
+<p>可以引入插件直接执行这个gradle内的所有内容</p>
+</li>
+</ol>
+<h2>源代码可以写什么</h2>
+<ol>
+<li>task 闭包</li>
+<li>调用官方的闭包，设置一些东西</li>
+<li>定义变量</li>
+<li>执行调用插件闭包，或者任何的groovy语句</li>
+</ol>
+<h3>任务</h3>
+
+      <div class="code-block-with-copy">
+        <button class="copy-btn" data-code="task t1(type:'ss',dependsOn&quot;'ll'){//依赖一个官方或者其它的提供的任务，可以执行一些特定的任务，比如官方提供的编译和执行java代码的api（闭包）
+        
+        
+    a='l' \\等各种方法，在第一个配置阶段会执行的代码
+    dolist{
+        
+    }
+    dofirst{
+        
+    }
+    //这俩闭包会在第二个阶段分别执行
+}
+
+或者用这种方式创建任务
+
+tasks.create(){}...." >复制</button>
+        <pre><code>task t1(type:'ss',dependsOn&quot;'ll'){//依赖一个官方或者其它的提供的任务，可以执行一些特定的任务，比如官方提供的编译和执行java代码的api（闭包）
+        
+        
+    a='l' \\等各种方法，在第一个配置阶段会执行的代码
+    dolist{
+        
+    }
+    dofirst{
+        
+    }
+    //这俩闭包会在第二个阶段分别执行
+}
+
+或者用这种方式创建任务
+
+tasks.create(){}....</code></pre>
+      </div><h3>定义属性</h3>
+<p>可以直接定义啊，</p>
+<p>也可以用ext函数，在代码执行阶段添加属性；</p>
+<p>也可以通过命令行的时候添加，需要在代码中通过${name}的方式引用；</p>
+<h3>增量式构建</h3>
+<p>在代码中设置inputs,outputs等属性，如果没有修改，下次执行这个任务的时候不会再执行了，下次命令的时候；</p>
+<h3>使用插件</h3>
+<p>用<code>apply plugin:'name'</code>的方式使用一个插件，或者</p>
+<p><code>plugins{ id:&quot;name&quot;, id:&quot;name&quot; }</code></p>
+<p>的方式去加载插件，</p>
+<p>这些插件内的任务都会被加载到这个源代码中；</p>
+<h2>依赖管理闭包的使用</h2>
+<ol>
+<li>使用<code>repositories</code>来添加一些jar的位置，可以是maven，也可以是ivy ，flatDir 等；</li>
+<li>使用<code>configurations</code>来调用一个加载一个或者一些组，然后通过<code>dependencies</code>去写这些组的具体的jar（有的可能不被项目加载）；</li>
+</ol>
+<h2>自定义任务类型和插件</h2>
+<p>比maven简单的多，但是也不是直接写闭包，而是写一些java接口，需要继承，Defaultaks和Plugin接口；可以单独一个源代码加载，也可以是就放在这个文件中；</p>
+<p>任务的行为，或者插件的任务都是一些函数；</p>
+<h2>和maven的使用区别</h2>
+<ol>
+<li>使用maven呢，构建是统一的，都是java后台代码，而gradle并不是，怎么构建，文件在哪里，都需要自己定义，所以，我们不可能直接在开发中自己去定义这些东西，因为我们使用的都是安卓或者spring，这么大的开源项目，我们自己怎么写构建，所以由他们来写构建；所以<strong>一般我们说学gradle</strong>也包含了学习安卓或者spring等项目提供的gradle插件，我们使用他们提供的插件来做一些构建；</li>
+</ol>
+<p>当然他也可以和maven一样成为IDE的jar辅助工具；</p>
+<ol start="2">
+<li>
+<p>那么好处是啥呢，其实和maven相比，对我们普通人几乎没有区别，如果不是项目开发构建者，你也没法对整个项目做什么事，而且做这些事需要学习groovy甚至需要长期的groovy开发经验才行；普通程序员只能一些简单的print语句罢了，还有就是配置从xml变成了groovy，更加的简洁了；因为，项目的构建不管是spring还是安卓，都是厂商项目提供的插件，我们使用起来和maven的过程区别不大，但是和maven相比，写gradle插件可比maven插件更简单了，对他们可操作的空间和开发时间的节省是更大的；我们最多就是写个依赖，管理一下依赖，其它的也就很少用了；都是点点点；</p>
+</li>
+<li>
+<p>哪个更好，对我们来说区别不大，对于这些spring框架厂商区别大，如果他们都选gradle而直接放弃maven那也没有办法了，但是maven本身就提供了构建插件，所以这些开源厂商并不需要花太多时间去维护，所以我觉得也不会说就彻底让maven没落了；</p>
+</li>
+</ol>
+<h1>springboot使用</h1>
+<p>构建要点bootjar</p>

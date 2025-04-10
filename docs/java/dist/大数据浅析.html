@@ -1,0 +1,232 @@
+<h1>前提</h1>
+<p>大数据的首要问题是文件系统，传统的操作系统的文件系统，都是单机的，只适合于一个主机，比如NTFS，FAT32，exFAT等，在安装系统格式化硬盘的时候选择的格式，就是这些文件系统格式。</p>
+<p>分布式的文件系统，是提供一个控制接口，保存文件，修改文件，这个文件可能保存到任何一个主机，而不只是一个，如果主机的内存不够，可以增加主机和内存。不是增加硬盘就好了吗，为啥要增加主机呢，因为分布式文件系统涉及到分布式的并发操作文件，只用一个主机肯定是不够的。</p>
+<p>其实这并不是需要啥框架，自己用java写个文件管理系统也可以，比如我们用一个文件关系表来保存文件的<a href="/other/%E5%90%8D%E8%AF%8D%E7%BF%BB%E8%AF%91%E8%BE%A8%E8%AE%A4.md" onclick="handleLinkClick(event)">元信息</a>，每次保存文件，文件用一行记录表示，这行记录，不仅保存了文件的名字路径，还保存了，文件所在主机的ip，主机ip上的位置，文件的大小。然后具体有几个主机呢，我们可以用另一个表，多个列表示多个主机和ip，还有容量大小。上传文件的时候，我们自己判断文件大小，找到一个容量剩余大的主机存进去（这些主机提供nginx的文件保存接口）。然后下载文件的时候，我们通过行记录找到具体的文件所在的主机ip，文件的位置，让主机直接请求这台文件服务器。这是不是分布式文件系统，就这么简单，不要想太复杂（当然主机的断联，心跳检测是否依然存在，备份，等等文件，但是这些都不是核心功能，也不是重点，只要保证网络机器没问题，前面说的这个简易方案就是真实可用的）。</p>
+<p>我说的这种文件系统和FastDFS文件系统很像，但是这种文件系统只适合保存小文件（别的开源分布式文件系统还有很多）。</p>
+<p>但是大数据，这个指的是超大型的数据，不做文件拆分，就用一个文件保存。这就是大数据问题。传统的文件系统，最大也保存不了多大，<strong>FAT</strong>最大才4G。于是出现了适用于超大，无限大的分布式文件系统，HDFS。不过HDFS其实原理还是把无限大的文件，拆分成128MB的一个个小文件，但是对这个文件系统对外表达的依然是一个文件，所有的分布式文件系统都一样，都是建立在单机传统操作系统上文件系统之上的文件系统。文件都是抽象文件。</p>
+<p>但是除了分布式文件系统，还需要有计算分布式文件系统的工具。这就诞生了一个hadoop，大数据框架。目前大数据技术，就是指的hadoop框架（雅虎支持）。难道除了hadoop没有别的大数据框架了？有，google就有，但是不开源。可能一些国际网络科技公司还有别的好的解决方法，但是都没有开源的，目前只有这个是免费实用面最广的大数据框架技术。其实这个框架的思想还是源自于google发表的一系列论文，谷歌还真是的科技界的大佬，不管是k8s，还是大数据框架，都是谷歌发起推动的。</p>
+<p>所以大数据的核心问题就两个，超大文件的保存，超大文件的计算。大数据技术目前指的是hadoop。</p>
+<h1>hadoop是什么</h1>
+<p>前面也说了，hodoop是大数据技术。很多文章或者书籍把hodoop称为大数据框架，它的官网也把自己叫框架。没错确实确实是，但是对于普通开发者而言，hodoop只是一个软件。是一个工具。站在不同层次的开发者，看的角度就不同，使用hadoop的hdfs，yarn去开发hive，开发MapReduce，开发sqoop，确实是框架，框架提供的半成品的类库，代码，拿来组装加工。而对于目前的我而言，或者绝大多数开发者而言，我们是去使用，这些技术成品的，我们是去使用MapReduce，去使用Hive的，而不是去基于低层开发什么，我们是把这些对接到我们的系统。但是吧，我们写了MapReduce，写了spark确实是像框架，但是并不多。我在一直说这个词，是因为词语的使用，会给不了解的人，想要去了解的人，带来很多的困惑，导致别人浪费时间可能跑偏题，这是不好的。</p>
+<p>hadoop本质上就是一个软件，一个解压包，五六百MB。我们安装使用它就跟安装jdk，安装node.js一样，解压，设置环境变量。</p>
+<p>hadoop，是一个软件集合，主要包含，HDFS，YARN，MapReduce，用于控制这三个的启动脚本，客户端。就像安装node之后，也会帮你安装了npm，安装jdk会同时拥有，java,javac, jps等软件（每个命令都是一个程序）。</p>
+<p>首先是分布式文件系统，那么就要在多个机器上都安装，解压添加环境变量。然后配置文件，配置文件有多个，HDFS需要，YARN需要，MapReduce也需要，基本上都是设置有几个节点，阶段的服务ip接口，名字，谁是主节点等信息。然后每个服务器上都要有相同的配置文件。hadoop是运行在jvm上的，需要先安装jdk。</p>
+<p>我们要在每个服务器上都启动hadoop，就是分别启动hdfs,yarn,mapreuce这三个子程序。所有的分布式软件，都肯定是主从架构的（master/slave，直接翻译是主人，奴隶，现在各个开源软件都在取消这个名词，改为main，secondarty一类的，因为这样歧视黑人奴隶，比如git就把默认分支改为了main），主节点是管理用的，从节点做具体的事情。这三个都是主从架构的，谁是主谁是从，都在配置文件中，客户端程序，和服务器程序，都在hadoop同一个解压包中，不然也不会无五六百MB这么大。</p>
+<p>启动起来后，我们就可以在主节点，使用客户端脚本去控制交互hdfs了（yarn,mapreduce后面讲怎么交互）；交互的方式就跟使用docker命令一样，因为hdfs是文件系统，所以交互操作就和普通的linux操作文件很像。</p>
+<h1>用hadoop干什么</h1>
+<p>当然是计算超大文件数据了。这些数据可能大到任何一个数据库，mysql，es都带不动。但是hdfs是不支持随机读写的，就是无法修改一个文件某个块的中一行记录，要修改只能全部读取到内存，修改一行，全部在写到磁盘。所以，不适合实时性很强的软件功能，适合离线计算，统计，造数据，比如雅虎以前可能用它离线计算搜索引擎的倒排索引。</p>
+<p>但是现在在hadoop的基础上开发出了很多的软件，比如阿里的Blink，已经能够利用hdfs，hadoop平台提供近实时的实时计算软件了。但是还不是特别成熟，没有大的推广，那肯定也是跟大部分使用大数据的公司也没有这个需求，现有的使用自己合理设计的多台mysql进行计算，也是可以提供服务的。而且游戏这种超级要求实时性的软件，肯定无法使用这个。</p>
+<h1>hadoop相关软件的具体使用和概念</h1>
+<p>这篇文件，不会讲具体是怎么做，点什么，下载什么，因为这些在很多地方都可以搜到，最重要的是我们要先知道，他是什么，他怎么用。就像你永远不会去记一个java的类名怎么写，因为你需要打出前几个字母，现在的idea会帮你自动补全，你也不会记某个html标签有什么属性，因为可以查，但是我们要具体有什么，可以怎么用。</p>
+<p>前面说了，hadoop就是就是一个解压包，包含多个软件。这是个分布式的（单机的测试和分布式模式的原理一样）；</p>
+<ul>
+<li>
+<p>hdfs 是一个分布式文件系统，文件可以无限大。但是只能文件追加，不能修改某处。要么整体删除，要么添加追加。这是逻辑上的使用。实际上，文件不管多大都是被分成了多个128MB的小文件，如果文件本身就小于128MB，那就别用这个，太浪费了。master节点，是用于保存文件元数据的（前面说过了，分布式软件都是主从架构的），从节点是数据节点，保存文件具体数据的。每个文件的块默认都被随机分配到了三个不同的数据节点上，这是可以配置的，当然前提是有三个以上的数据节点。还有一种从节点，是用于备份主节点的数据的。</p>
+</li>
+<li>
+<p>MapReduce</p>
+<p>是用来计算hdfs中的文件的，MapReduce也是主从架构，主节点叫<strong>JobTracker</strong>，从节点叫<strong>taskTracker</strong>。JobTracker最开始，有两个功能，多个服务器上的资源管理，另一个是作业调度，将mapderuce程序分配到哪个机器执行。后来资源原理被分离出去了，独立成为一个yarn软件。</p>
+<p>这个，不是实时的，运行很慢。就是用于离线数据分析的。</p>
+<blockquote>
+<p>这个软件是使用主节点来执行，一个java程序的，也可以执行别的程序。因为是java写的，需要支持java，通过运行java类，来进行计算，我们使用MapReduce，就是写MapReduce提供的java接口。</p>
+<p>下面用一个官方的例子来讲解怎么写，过程是啥。</p>
+
+      <div class="code-block-with-copy">
+        <button class="copy-btn" data-code="import java.io.IOException;
+import java.util.*;
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapred.*;
+import org.apache.hadoop.util.*;
+
+public class count {
+
+    /**
+     * 我们这里继承了Mapper接口，实现了一个类。
+     * MapReduce程序的第一个阶段就是调用这个接口的实现类，执行它的map方法。
+     */
+    public static class Map extends MapReduceBase implements Mapper&lt;LongWritable, Text, Text, IntWritable&gt; {
+        private final static IntWritable one = new IntWritable(1);
+        private Text word = new Text();
+
+        public void map(LongWritable key, Text value, OutputCollector&lt;Text, IntWritable&gt; output, Reporter reporter) throws IOException {
+            String line = value.toString();
+            StringTokenizer tokenizer = new StringTokenizer(line);
+            while (tokenizer.hasMoreTokens()) {
+                word.set(tokenizer.nextToken());
+                output.collect(word, one);
+            }
+        }
+    }
+
+    /**
+     * 这里是继承了Reducer接口实现了一个类，
+     * 是第二个阶段。
+     */
+    public static class Reduce extends MapReduceBase implements Reducer&lt;Text, IntWritable, Text, IntWritable&gt; {
+        public void reduce(Text key, Iterator&lt;IntWritable&gt; values, OutputCollector&lt;Text, IntWritable&gt; output, Reporter reporter) throws IOException {
+            int sum = 0;
+            while (values.hasNext()) {
+                sum += values.next().get();
+            }
+            output.collect(key, new IntWritable(sum));
+        }
+    }
+
+    /**
+     * 调用mapDurece执行这个类，就会调用这个方法，我们来一行行的读，就可以知道一个maoDurece的过程了
+     * @param args
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        JobConf conf = new JobConf(count.class);
+        //每个程序都是读取一个hdfs的文件，通过计算生成一个hdfs文件，所以这里是提供了文件的地址。
+        FileInputFormat.setInputPaths(conf, new Path(args[0]));
+        FileOutputFormat.setOutputPath(conf, new Path(args[1]));
+
+        /**
+         * 这一行是用于
+         * 第一个阶段，会把输入的文件分片，JobTracker会调用hdfs，查看有哪些服务器上数据节点，保存了实际的该文件的块。
+         * 然后在这个含有文件的机器上，执行该类中继承的map方法，参数是k-v ，输出也是k-v （使用参数，out设置值而不是直接返回）
+         *
+         * map函数，输入的k-v就是通过下面这行，决定的，决定了使用以这个参数方式的类的方式，怎么读取这个文件，不管怎么读取都是从上往下读。
+         * 可以把一行的行号作为key，一行的内容作为vlaue，也是是把连续三行作为key，或者不连续的读，识别一个json
+         * map函数输出的也是k-v 这个k和v是通过输入的k-v计算而来，可以和输入进入的完全一样不做处理，更可能是都不一样
+         * 
+         */
+        conf.setInputFormat(TextInputFormat.class);
+        /**
+         * 这个是用于reduce阶段结束以后，把所有的结算结果，如何序列化变成一个文件
+         * 
+         * reduce阶段是调用map阶段输出的k-v，将所有k相同的k作为一个整体，v成为一个集合，迭代器。
+         * reduce计算完，还是输出一个k-v结构，这个也是分布式执行的，会在特定的节点上执行。
+         */
+        conf.setOutputFormat(TextOutputFormat.class);
+
+
+        /**
+         * 下面这些就是确定调用哪个map，哪个reduce
+         */
+        conf.setJobName(&quot;wordcount&quot;);
+
+        conf.setOutputKeyClass(Text.class);
+        conf.setOutputValueClass(IntWritable.class);
+
+        conf.setMapperClass(Map.class);
+        conf.setCombinerClass(Reduce.class);
+        conf.setReducerClass(Reduce.class);
+        JobClient.runJob(conf);
+    }
+}
+
+// 可以看出，能被mapreduce进行计算的文件，数据必须是有格式的，且必须是可以进行拆分成一个一个没有关联的子集。所以大数据框架也不能进行通用的计算，主要用于统计。" >复制</button>
+        <pre><code>import java.io.IOException;
+import java.util.*;
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapred.*;
+import org.apache.hadoop.util.*;
+
+public class count {
+
+    /**
+     * 我们这里继承了Mapper接口，实现了一个类。
+     * MapReduce程序的第一个阶段就是调用这个接口的实现类，执行它的map方法。
+     */
+    public static class Map extends MapReduceBase implements Mapper&lt;LongWritable, Text, Text, IntWritable&gt; {
+        private final static IntWritable one = new IntWritable(1);
+        private Text word = new Text();
+
+        public void map(LongWritable key, Text value, OutputCollector&lt;Text, IntWritable&gt; output, Reporter reporter) throws IOException {
+            String line = value.toString();
+            StringTokenizer tokenizer = new StringTokenizer(line);
+            while (tokenizer.hasMoreTokens()) {
+                word.set(tokenizer.nextToken());
+                output.collect(word, one);
+            }
+        }
+    }
+
+    /**
+     * 这里是继承了Reducer接口实现了一个类，
+     * 是第二个阶段。
+     */
+    public static class Reduce extends MapReduceBase implements Reducer&lt;Text, IntWritable, Text, IntWritable&gt; {
+        public void reduce(Text key, Iterator&lt;IntWritable&gt; values, OutputCollector&lt;Text, IntWritable&gt; output, Reporter reporter) throws IOException {
+            int sum = 0;
+            while (values.hasNext()) {
+                sum += values.next().get();
+            }
+            output.collect(key, new IntWritable(sum));
+        }
+    }
+
+    /**
+     * 调用mapDurece执行这个类，就会调用这个方法，我们来一行行的读，就可以知道一个maoDurece的过程了
+     * @param args
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        JobConf conf = new JobConf(count.class);
+        //每个程序都是读取一个hdfs的文件，通过计算生成一个hdfs文件，所以这里是提供了文件的地址。
+        FileInputFormat.setInputPaths(conf, new Path(args[0]));
+        FileOutputFormat.setOutputPath(conf, new Path(args[1]));
+
+        /**
+         * 这一行是用于
+         * 第一个阶段，会把输入的文件分片，JobTracker会调用hdfs，查看有哪些服务器上数据节点，保存了实际的该文件的块。
+         * 然后在这个含有文件的机器上，执行该类中继承的map方法，参数是k-v ，输出也是k-v （使用参数，out设置值而不是直接返回）
+         *
+         * map函数，输入的k-v就是通过下面这行，决定的，决定了使用以这个参数方式的类的方式，怎么读取这个文件，不管怎么读取都是从上往下读。
+         * 可以把一行的行号作为key，一行的内容作为vlaue，也是是把连续三行作为key，或者不连续的读，识别一个json
+         * map函数输出的也是k-v 这个k和v是通过输入的k-v计算而来，可以和输入进入的完全一样不做处理，更可能是都不一样
+         * 
+         */
+        conf.setInputFormat(TextInputFormat.class);
+        /**
+         * 这个是用于reduce阶段结束以后，把所有的结算结果，如何序列化变成一个文件
+         * 
+         * reduce阶段是调用map阶段输出的k-v，将所有k相同的k作为一个整体，v成为一个集合，迭代器。
+         * reduce计算完，还是输出一个k-v结构，这个也是分布式执行的，会在特定的节点上执行。
+         */
+        conf.setOutputFormat(TextOutputFormat.class);
+
+
+        /**
+         * 下面这些就是确定调用哪个map，哪个reduce
+         */
+        conf.setJobName(&quot;wordcount&quot;);
+
+        conf.setOutputKeyClass(Text.class);
+        conf.setOutputValueClass(IntWritable.class);
+
+        conf.setMapperClass(Map.class);
+        conf.setCombinerClass(Reduce.class);
+        conf.setReducerClass(Reduce.class);
+        JobClient.runJob(conf);
+    }
+}
+
+// 可以看出，能被mapreduce进行计算的文件，数据必须是有格式的，且必须是可以进行拆分成一个一个没有关联的子集。所以大数据框架也不能进行通用的计算，主要用于统计。</code></pre>
+      </div></blockquote>
+</li>
+<li>
+<p>yarn，前面说了，这是MapReduce将资源管理功能拆分出来的一个软件</p>
+<p>他也是主从架构的，所有的从节点都会计算服务器的各种资源，用于汇总给主节点。mapreduce的JobTracker，此时是通过访问yarn，来判断使用哪个节点执行的。这个之后也可以用于别的软件了，比如spark 等，所有需要计算的软件都可以利用它。</p>
+</li>
+</ul>
+<h1>hadoop之外的软件</h1>
+<p>前面三个介绍的是，hadoop本身提供的软件，hadoop都说了自己是个框架。我们如果只使用这三件套，能使用的功能也没有多少，有不少的公司和组织，在这个框架基础上建立许多软件。这些软件组成了hadoop生态圈，但是这些软件需要独立下载，而不是只下载一个hadoop压缩包就行了，而且这些软件可能还需要mysql，zookeerper,redis等软件，这些软件的安装位置，完全是自己任意决定的，哪怕是用腾讯云云数据库都行。这些软件一般也都是主从架构的，和前面的yarn，mapreduce一样，需要在主节点，每个hdfs的数据节点，都安装。都是压缩包解压，设置环境变量，设置配置文件，启动。</p>
+<p>这里只会说一些软件的功能和使用特点，并不会具体的分析功能适合使用。我也没有全部了解怎么用的，而且我现在已经写累了。😂</p>
+<ol>
+<li>Hive，是数据仓库，建立在hadoop之上，运行的时候他也会调用同服务器下的yarn，hdfs提供的接口，进行实际的操作，提供了以sql的方式进行操作数据，保存到hdfs文件系统中，利用mapreduce来实现sql计算。这已经是一个可以随机读写的数据库了，这在hdfs上的实现，其实和mysql等一系列持久化数据库采取的策略一样，删除数据，实际上并没有删除，修改实际上也没有修改，只是用新文件标记了一下，Hive也会采用内存缓存的方式，临时的小于128MB的文件甚至不会放在hdfs系统中，而是放在主机本地的操作系统的文件系统上。</li>
+<li>Hbase是一个建立在hadoop上的非关系数据库，作用同Hive。他也是分布式的，需要Zookeeper做同步。k-v数据。</li>
+<li>sqoop 作用就像hdfs上的navicat。</li>
+<li>spark 新的计算hdfs文件的软件，对标mapreduce，多线程更加快速，但是仍没有达到实时的要求。使用scala语言开发，这个语言同样是运行jvm上的。</li>
+<li>Flink 也是新的计算hdfs的文件的软件，速度很快，基本可以到近实时的效果，可以用来进行实时的计算，对接到实际的项目了。</li>
+</ol>
+<p>​</p>

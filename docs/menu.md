@@ -12,14 +12,14 @@
   * [浅析大数据](/java/大数据浅析.md)
   * [分布式锁](/java/分布式锁.md)
 - js 
-  * [js语法特性](/code/js/js特性.md)
-  * [浅析nodeJS](/code/js/nodejs浅析.md)
+  * [js语法特性](/js/js特性.md)
+  * [浅析nodeJS](/js/nodejs浅析.md)
   * [动态内存分析](/编译/动态内存分析.md)
-  * [node架构与addon插件](/code/js/node架构.md)
-  * [electron加密](/code/js/electron加密.md)
-  * [v8内存管理](/code/js/v8内存管理.md)
-  * [web框架](/code/js/nodeweb.md)
-  * [js事件循环](/code/js/js事件循环.md)
+  * [node架构与addon插件](/js/node架构.md)
+  * [electron加密](/js/electron加密.md)
+  * [v8内存管理](/js/v8内存管理.md)
+  * [web框架](/js/nodeweb.md)
+  * [js事件循环](/js/js事件循环.md)
 - 前端
   * [前端项目必须知道的](/客户端/前端项目必须知道的.md)
 - 项目实践
