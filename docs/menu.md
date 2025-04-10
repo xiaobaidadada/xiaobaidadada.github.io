@@ -1,6 +1,6 @@
 <!-- _sidebar.md -->
 
-- [首页](/README.md)
+- [首页](/home.md)
 
 - java
   * [java集合原理分析](/java/java集合实现原理.md)
