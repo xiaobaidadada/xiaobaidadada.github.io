@@ -71,3 +71,18 @@ export function renderMenuMdCopyButton() {
     });
 }
 
+// 获取url 资源后缀
+export function getFileNameWithoutExtension(url) {
+    try {
+        const parts = url.split('/');
+        if(!parts.length)return '';
+        const end = parts[parts.length - 1];
+        if(end.includes('.')) {
+            return end.split('.')[0];
+        } else {
+            return ''
+        }
+    } catch (e) {
+        return ''; // 非法 URL 情况
+    }
+}

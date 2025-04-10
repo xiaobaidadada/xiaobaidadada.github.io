@@ -1,4 +1,4 @@
-import {getCurrentHtmlFullDir, renderMenuMdCopyButton, renderMenuMdList} from "./util.js";
+import {getCurrentHtmlFullDir, getFileNameWithoutExtension, renderMenuMdCopyButton, renderMenuMdList} from "./util.js";
 
 
 const markdownItCopyButton = (md) => {
@@ -63,7 +63,7 @@ md.use(linkClickPlugin);
 // });
 // md2.use(markdownItCopyButton) // 复制插件
 // md2.use(linkClickPlugin);
-
+const html_title = document.title;
 async function load_md_file(hash) {
     if (!hash || hash === "/") return;
     const path = getCurrentHtmlFullDir();
@@ -74,6 +74,10 @@ async function load_md_file(hash) {
     const text = await res.text();
     preview.innerHTML = md.render(text);
     renderMenuMdCopyButton();
+    const filename = getFileNameWithoutExtension(decodeURIComponent(hash));
+    if(filename) {
+        document.title = `${html_title}-${filename}`;
+    }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
