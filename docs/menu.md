@@ -3,10 +3,10 @@
 - [首页](/home.md)
 - java相关库原理
   * `这里是2023年毕业时候写的一些八股文博客`
-  * [java-集合原理分析](/java/java集合实现原理.md)
-  * [java-juc一些工具类原理分析与使用](/java/java多线程编程相关工具原理.md)
-  * [java-jvm浅析](/java/jvm浅析.md)
-  * [java-浅析大数据](/java/大数据浅析.md)
+  * [集合原理分析](/java/java集合实现原理.md)
+  * [juc一些工具类原理分析与使用](/java/java多线程编程相关工具原理.md)
+  * [jvm浅析](/java/jvm浅析.md)
+  * [浅析大数据](/java/大数据浅析.md)
   * 锁相关
     * [分布式锁](/java/分布式锁.md)
     * [浅谈锁](/java/浅谈锁.md)
