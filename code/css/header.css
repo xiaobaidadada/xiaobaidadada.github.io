@@ -122,9 +122,11 @@
     border-radius: 2px;
 }
 
-
-
+.github-corner {
+    padding-right: 2rem;
+}
 .github-corner image {
     height: 2rem;
     width: 2rem;
+
 }

@@ -1,9 +1,7 @@
 import {linkClickPlugin, markdownItCopyButton} from "./md_util.mjs";
 
 let md_render;
-let not_load_md = true;
 
-let load_md_resolve;
 export class Http_util {
 
 
@@ -31,6 +29,7 @@ export class Http_util {
 
     static async get(url) {
         try {
+            // throw "1";
             let dir;
             let dot_index;
             let name;
@@ -55,6 +54,9 @@ export class Http_util {
         } catch (e) {
             const res = await fetch(url);
             let data = await res.text();
+            if (!res.ok) {
+                return data;
+            }
             if(!md_render) {
                 await this.load_md();
             }

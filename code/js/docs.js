@@ -26,7 +26,7 @@ window.addEventListener('DOMContentLoaded', () => {
         window.location.pathname += "/";
     }
     const hash = location.hash.replace("#", "");
-    console.log(decodeURIComponent(hash));
+    // console.log(decodeURIComponent(hash));
     load_md_file(hash);
 });
 

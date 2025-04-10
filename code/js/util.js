@@ -19,20 +19,39 @@ export function renderMenuMdList() {
     lis.forEach(li => {
         const subList = li.querySelector('ul, ol');
         const firstP = li.querySelector('p'); // 获取第一个 p 标签
-
-        if (subList && firstP) {
+        const textNode = li.firstChild; // 获取第一个子节点（文本节点 "11"）
+        // console.log(firstP?.textContent);
+        // console.log(textNode.nodeType,textNode.textContent);
+        // if(textNode.textContent.includes("11"))debugger
+        if (subList && (firstP || (textNode && textNode.nodeType === Node.TEXT_NODE))) {
             li.classList.add('collapsible');
             subList.style.display = 'none'; // 初始隐藏
 
             // 只在点击第一个 p 标签时触发折叠
-            firstP.addEventListener('click', (e) => {
-                // 防止点击事件冒泡到父级 li，导致子列表展开
-                e.stopPropagation();
+            if(firstP) {
+                firstP.addEventListener('click', (e) => {
+                    // 防止点击事件冒泡到父级 li，导致子列表展开
+                    e.stopPropagation();
 
-                // 切换折叠状态
-                const expanded = li.classList.toggle('expanded');
-                subList.style.display = expanded ? 'block' : 'none';
-            });
+                    // 切换折叠状态
+                    const expanded = li.classList.toggle('expanded');
+                    subList.style.display = expanded ? 'block' : 'none';
+                });
+            } else if(textNode) {
+                const p = document.createElement("p");
+                p.appendChild(textNode);
+                li.insertBefore(p, li.firstChild);
+                // li.appendChild(p);
+                p.addEventListener('click', (e) => {
+                    // 防止点击事件冒泡到父级 li，导致子列表展开
+                    e.stopPropagation();
+
+                    // 切换折叠状态
+                    const expanded = li.classList.toggle('expanded');
+                    subList.style.display = expanded ? 'block' : 'none';
+                });
+            }
+
         }
     });
 }
