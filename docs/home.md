@@ -16,7 +16,12 @@ This website currently does not have an English version.
 
 编程交流qq群: `824838674`
 
-## 链接
-- [github主页](https://github.com/xiaobaidadada)
-- [五子棋游戏](https://xiaobaidadada.github.io/docs/v1/wzq/wzq.html)
+## 看看别的
+- [filecat 项目](https://filecat.xiaobaidadada.fun/)：一个文件服务器和服务器管理工具
+- [node-word-detection](https://github.com/xiaobaidadada/node-word-detection): 用于node.js的 敏感词/违禁词 检测 替换 过滤 ，超高效率，极小内存(8万个违禁词仅需要30MB）
+- [pty-shell](https://github.com/xiaobaidadada/pty-shell): js实现的虚拟pty shell ，既是pty也是shell,适用于众多终端自定义场景
+- [node-process-watcher](https://github.com/xiaobaidadada/node-process-watcher): 用于node.js 的实时监控系统上的进程资源内存使用情况，资源占用率极小
+- [github主页](https://github.com/xiaobaidadada) 
 - [npm主页](https://www.npmjs.com/~xiaobaidadada)
+- [五子棋游戏](https://xiaobaidadada.github.io/docs/v1/wzq/wzq.html)
+
