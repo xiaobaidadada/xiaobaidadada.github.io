@@ -44,11 +44,11 @@ export class Http_util {
                     dot_index = i;
                 }
             }
-            url = `${dir}/dist/${name}.html`;
-            const res = await fetch(url);
+            const new_url = `${dir}/dist/${name}.html`;
+            const res = await fetch(new_url);
             // 检查返回的响应是否正常
             if (!res.ok) {
-                throw new Error(`Failed to fetch ${url}: ${res.status}`);
+                throw new Error(`Failed to fetch ${new_url}: ${res.status}`);
             }
             return  res.text();
         } catch (e) {
