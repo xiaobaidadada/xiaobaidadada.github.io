@@ -1,4 +1,4 @@
-<p>根据RBAC模型<a href="/database/%E6%9D%83%E9%99%90.md" onclick="handleLinkClick(event)">权限</a>，一个权限就是一个变量，通常用字符串来代表这个权限；</p>
+<p>根据RBAC模型<a href="/zh-CN/database/%E6%9D%83%E9%99%90.md" onclick="handleLinkClick(event)">权限</a>，一个权限就是一个变量，通常用字符串来代表这个权限；</p>
 <p>这里提供的是web后端的应用，对于非web后端的应用可能没有拦截器，或者不用spring的项目没有aop这种东西，但是都完全可以自己实现一个做替代，基本的思路还是一样的。</p>
 <p>这里提供的权限的解决方案是一个基于：java注解，spring aop，web拦截器，ThreadLocal，mybatis拦截器实现的。由于spring aop是在运行期间临时为对象生成动态代理对象，执行效果没有AspectJ在编译时期植入的好，但是AspectJ需要它独立的编译器这样打包的时候使用maven就需要安装一些插件操作比较麻烦，但是执行速度肯定比spring aop快得多，不过这点性能的省略也是也没有必要，毕竟我们都使用注解这种东西了就是要提高代码复用率，但是没有什么解决方案是完美的；ThreadLocal是可以在一个线程内任意地方都可以获取数据的工具（因为tomcat一次请求就是一个线程，在这个请求内可以使用这个办法）。</p>
 <blockquote>

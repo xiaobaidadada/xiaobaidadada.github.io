@@ -1,5 +1,5 @@
 <h1>nodejs内存泄露问题发生的根本原因</h1>
-<p>1： <a href="/java/jvm%E6%B5%85%E6%9E%90" onclick="handleLinkClick(event)">jvm</a> 这篇文章是关于java虚拟机的垃圾回收机制的讲解，nodejs的垃圾回收机制和jvm的很相似，原理相同。</p>
+<p>1： <a href="/zh-CN/java/jvm%E6%B5%85%E6%9E%90" onclick="handleLinkClick(event)">jvm</a> 这篇文章是关于java虚拟机的垃圾回收机制的讲解，nodejs的垃圾回收机制和jvm的很相似，原理相同。</p>
 <p>2:：当对象保持着引用关系，内存就会持续增长</p>
 <p>3：当面临大量数据运算的时候，新生代空间短期内会不够用，导致崩溃。v8只提供老年代的空间限制，新生代并不能设置。</p>
 <p>可能发生的情况</p>
