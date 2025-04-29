@@ -29,7 +29,7 @@ export class Http_util {
 
     static async get(url) {
         try {
-            throw "1";
+            // throw "1";
             let dir;
             let dot_index;
             let name;
