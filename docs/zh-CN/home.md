@@ -23,5 +23,5 @@ This website currently does not have an English version.
 - [node-process-watcher](https://github.com/xiaobaidadada/node-process-watcher): 用于node.js 的实时监控系统上的进程资源内存使用情况，资源占用率极小
 - [github主页](https://github.com/xiaobaidadada) 
 - [npm主页](https://www.npmjs.com/~xiaobaidadada)
-- [五子棋游戏](https://xiaobaidadada.github.io/docs/v1/wzq/wzq.html)
+- [五子棋游戏](https://xiaobaidadada.fun/docs/zh-CN/v1/wzq/wzq.html)
 
